@@ -10,7 +10,7 @@ namespace FirstBHO
     [
         SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode),
         ComVisible(true),
-        Guid("09b2f885-9bd8-478d-beb7-015e362dfb6d"),
+        Guid("09b2f885-9bd8-478d-beb7-015e362dfb6d"), 
         ClassInterface(ClassInterfaceType.None)
     ]
     public class BHO : IObjectWithSite
