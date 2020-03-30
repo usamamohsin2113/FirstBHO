@@ -3,31 +3,42 @@ using Microsoft.Win32;
 using System.Runtime.InteropServices;
 using System;
 using System.Security.Permissions;
-using System.Windows.Forms;
+using Microsoft.VisualStudio.OLE.Interop;
+using System.Diagnostics;
 
 namespace FirstBHO
 {
     [
         SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode),
         ComVisible(true),
-        Guid("09b2f885-9bd8-478d-beb7-015e362dfb6d"), 
+        Guid("09b2f885-9bd8-478d-beb7-015e362dfb6d"),
         ClassInterface(ClassInterfaceType.None)
     ]
-    public class BHO : IObjectWithSite
+    public class BHO : IObjectWithSite, IOleCommandTarget
     {
-        SHDocVw.WebBrowser webBrowser;
+        WebBrowser webBrowser;
 
         public int SetSite([MarshalAs(UnmanagedType.IUnknown)] object site)
         {
-            if (site != null)
+#if DEBUG
+            Debugger.Launch();
+#endif
+            try
             {
-                webBrowser = (SHDocVw.WebBrowser)site;
-                webBrowser.BeforeNavigate2 += OnBeforeNavigate2;
+                if (site != null)
+                {
+                    webBrowser = (SHDocVw.WebBrowser)site;
+                    webBrowser.BeforeNavigate2 += OnBeforeNavigate2;
+                }
+                else
+                {
+                    webBrowser.BeforeNavigate2 -= OnBeforeNavigate2;
+                    webBrowser = null;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                webBrowser.BeforeNavigate2 -= OnBeforeNavigate2;
-                webBrowser = null;
+
             }
 
             return 0;
@@ -80,6 +91,17 @@ namespace FirstBHO
             {
                 registryKey.DeleteSubKey(guid, false);
             }
+        }
+
+        public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        {
+            return 0;
+        }
+
+        public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
+        {
+            new MainForm().ShowDialog();
+            return 0;
         }
     }
 }
